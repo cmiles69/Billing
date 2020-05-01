@@ -6,10 +6,15 @@
 # https://www.youtube.com/watch?v=aVIpje43mPk         # Part 3
 # From Web code
 #
+# Part 1
 # 4:38, 6:00, 6:55, 7:38, 8:34, 11:50 
 # 16:00, 18:37, 27:59, 29:31, 32:33, 34:05
+#
+# Part 2 -> 8:08, 10:32, 13:56, 15:40, 18:08, 19:51
+# 22:45, 23:17, 26:06
 
 # Craig Miles -> cmiles69@hushmail.com
+# https://github.com/cmiles69/Billing.git
 
 import tkinter
 import tkinter.scrolledtext as tkst
@@ -572,14 +577,15 @@ class Billing_Class( object ):
                             relheight = 0.50 )
         self.lbl_reciept = tkinter.Label( self.reciept,
                                 font = self.label_font,
-                                text = 'Bill Area',
+                                text = 'Reciept Area',
                                 background = '#074463',
                                 foreground = 'gold',
                                 relief = tkinter.GROOVE )
         self.lbl_reciept.place( relx = 0,
                                 rely = 0,
                                 relwidth = 1 )
-        self.reciept.insert( tkinter.END, '\n\n' ) # Get past label 
+        self.reciept.insert( tkinter.END, '\n\n' ) # Get past label
+        self.reciept_header() 
 
 #============================Create Billing Menu========================
 
@@ -719,7 +725,55 @@ class Billing_Class( object ):
         if exit_program > 0:
             self.root.destroy()
         else:
-            return( None )                                        
+            return( None )
+
+    def total_prices( self ):
+        #===============Total Cosmetic Price=================
+        self.TCP = float((  self.bath_soap.get()   * 40  +  
+                            self.face_cream.get()  * 120 +
+                            self.face_wash.get()   * 60  +   
+                            self.hair_spray.get()  * 180 + 
+                            self.hair_gel.get()    * 140 +   
+                            self.body_lotion.get() * 180 ))
+        string_TCP = '$' + str( self.TCP ) 
+        self.total_cosmetic_price.set( string_TCP )
+        #===============Cosmetic Tax=========================
+        self.CT = round( self.TCP * 0.05 )
+        string_CT = '$' + str( self.CT )
+        self.cosmetic_tax.set( string_CT )
+        #===============Total Grocery Price==================
+        self.TGP = float((  self.rice.get()         * 80  +  
+                            self.food_oil.get()     * 180 +
+                            self.red_lentil.get()   * 60  +   
+                            self.wheat.get()        * 240 + 
+                            self.sugar.get()        * 45  +   
+                            self.tea.get()          * 150 ))
+        string_TGP = '$' + str( self.TGP )
+        self.total_grocery_price.set( string_TGP )
+        #===============Grocery Tax==========================
+        self.GT = round( self.TGP * 0.10 )
+        string_GT = '$' + str( self.GT )
+        self.grocery_tax.set( string_GT )
+        #===============Total Cold Drinks Price==============
+        self.TDP = float((  self.maaza.get()     * 60 +  
+                            self.coke.get()      * 60 +
+                            self.frooti.get()    * 50 +   
+                            self.thums_up.get()  * 45 + 
+                            self.limca.get()     * 40 +   
+                            self.sprite.get()    * 60 ))
+        string_TDP = '$' + str( self.TDP )
+        self.total_cold_drinks_price.set( string_TDP )
+        #===============Cold Drinks Tax======================
+        self.CDT = round( self.TDP * 0.05 )
+        string_CDT = '$' + str( self.CDT )
+        self.cold_drinks_tax.set( string_CDT )
+
+    def reciept_header( self ):
+        self.reciept.insert( tkinter.END,
+                            '      Welcome To Billing Software' )  #6
+
+    def generate_reciept( self ):
+        pass            
 
 #===========================Create Buttons==============================
 
@@ -732,7 +786,8 @@ class Billing_Class( object ):
                         activeforeground = 'gold',
                         activebackground = 'royal blue',
                         font = self.btn_font,
-                        text = 'Total' )
+                        text = 'Total',
+                        command =  self.total_prices )
         self.btn_total.place( relx = 0.62,
                               rely = 0.23,
                               relheight = 0.5 ) 
