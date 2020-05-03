@@ -4,14 +4,15 @@
 # https://www.youtube.com/watch?v=XvnVAjvfKOM&t=352s  # Part 1
 # https://www.youtube.com/watch?v=rTpnyb3y5-w         # Part 2
 # https://www.youtube.com/watch?v=aVIpje43mPk         # Part 3
-# From Web code
+# From Web code -> Rangesh ?
 #
 # Part 1
 # 4:38, 6:00, 6:55, 7:38, 8:34, 11:50 
 # 16:00, 18:37, 27:59, 29:31, 32:33, 34:05
 #
 # Part 2 -> 8:08, 10:32, 13:56, 15:40, 18:08, 19:51
-# 22:45, 23:17, 26:06
+# 22:45, 23:17, 26:06, 29:21, 32:47, 33:24, 34:46,
+# 35:39, 37:01, 40:17
 
 # Craig Miles -> cmiles69@hushmail.com
 # https://github.com/cmiles69/Billing.git
@@ -19,6 +20,9 @@
 import tkinter
 import tkinter.scrolledtext as tkst
 import tkinter.messagebox
+import random
+import names    # -> You will need to pip install this module.
+import secrets  # -> And also this module.
 from tkinter import font
 from tkinter import ttk
 
@@ -584,7 +588,6 @@ class Billing_Class( object ):
         self.lbl_reciept.place( relx = 0,
                                 rely = 0,
                                 relwidth = 1 )
-        self.reciept.insert( tkinter.END, '\n\n' ) # Get past label
         self.reciept_header() 
 
 #============================Create Billing Menu========================
@@ -729,12 +732,18 @@ class Billing_Class( object ):
 
     def total_prices( self ):
         #===============Total Cosmetic Price=================
-        self.TCP = float((  self.bath_soap.get()   * 40  +  
-                            self.face_cream.get()  * 120 +
-                            self.face_wash.get()   * 60  +   
-                            self.hair_spray.get()  * 180 + 
-                            self.hair_gel.get()    * 140 +   
-                            self.body_lotion.get() * 180 ))
+        self.BS = self.bath_soap.get()   * 4.0
+        self.FC = self.face_cream.get()  * 12.0
+        self.FW = self.face_wash.get()   * 6.0
+        self.HS = self.hair_spray.get()  * 18.0
+        self.HG = self.hair_gel.get()    * 14.0
+        self.BL = self.body_lotion.get() * 18.0
+        self.TCP = float( self.BS  +
+                          self.FC  +
+                          self.FW  +
+                          self.HS  +
+                          self.HG  +
+                          self.BL )
         string_TCP = '$' + str( self.TCP ) 
         self.total_cosmetic_price.set( string_TCP )
         #===============Cosmetic Tax=========================
@@ -742,12 +751,19 @@ class Billing_Class( object ):
         string_CT = '$' + str( self.CT )
         self.cosmetic_tax.set( string_CT )
         #===============Total Grocery Price==================
-        self.TGP = float((  self.rice.get()         * 80  +  
-                            self.food_oil.get()     * 180 +
-                            self.red_lentil.get()   * 60  +   
-                            self.wheat.get()        * 240 + 
-                            self.sugar.get()        * 45  +   
-                            self.tea.get()          * 150 ))
+        self.RI = self.rice.get()         * 8.0
+        self.FO = self.food_oil.get()     * 18.0
+        self.RL = self.red_lentil.get()   * 6.0
+        self.WH = self.wheat.get()        * 24.0
+        self.SG = self.sugar.get()        * 4.5
+        self.TE = self.tea.get()          * 1.50
+
+        self.TGP = float( self.RI +
+                          self.FO +
+                          self.RL +
+                          self.WH +
+                          self.SG +
+                          self.TE )
         string_TGP = '$' + str( self.TGP )
         self.total_grocery_price.set( string_TGP )
         #===============Grocery Tax==========================
@@ -755,12 +771,18 @@ class Billing_Class( object ):
         string_GT = '$' + str( self.GT )
         self.grocery_tax.set( string_GT )
         #===============Total Cold Drinks Price==============
-        self.TDP = float((  self.maaza.get()     * 60 +  
-                            self.coke.get()      * 60 +
-                            self.frooti.get()    * 50 +   
-                            self.thums_up.get()  * 45 + 
-                            self.limca.get()     * 40 +   
-                            self.sprite.get()    * 60 ))
+        self.MA = self.maaza.get()     * 6.0
+        self.CO = self.coke.get()      * 6.0
+        self.FR = self.frooti.get()    * 5.0
+        self.TH = self.thums_up.get()  * 4.5
+        self.LI = self.limca.get()     * 4.0
+        self.SP = self.sprite.get()    * 6.0
+        self.TDP = float(self.MA + 
+                         self.CO + 
+                         self.FR +
+                         self.TH +
+                         self.LI +
+                         self.SP  )
         string_TDP = '$' + str( self.TDP )
         self.total_cold_drinks_price.set( string_TDP )
         #===============Cold Drinks Tax======================
@@ -769,11 +791,50 @@ class Billing_Class( object ):
         self.cold_drinks_tax.set( string_CDT )
 
     def reciept_header( self ):
+        self.reciept.insert( tkinter.END, '\n\n' ) # Get past label
         self.reciept.insert( tkinter.END,
                             '      Welcome To Billing Software' )  #6
+        self.reciept.insert( tkinter.END, '\n\n' ) # Some Space.
 
     def generate_reciept( self ):
-        pass            
+        self.reciept.delete( 1.0, tkinter.END )
+        self.reciept_header()
+        self.reciept.insert( tkinter.END, 
+            f'\nBill Number : { self.bill_number.get()}')
+        self.reciept.insert( tkinter.END,
+            f'\nCustomer Name : { self.customer_name.get()}')
+        self.reciept.insert( tkinter.END,
+            f'\nPhone Number : { self.contact_number.get()}')
+
+        self.reciept.insert( tkinter.END,
+            f'\n=======================================')
+        self.reciept.insert( tkinter.END,
+            f'\n Products:\t\t   Qty:\t\tPrice:' )
+        self.reciept.insert( tkinter.END,
+            f'\n=======================================')
+
+        if self.bath_soap.get() != 0:
+            self.reciept.insert( tkinter.END,
+            f'\n Bath Soap\t\t   {self.bath_soap.get()}\t\t{self.BS}')
+        if self.face_cream.get() != 0:
+            self.reciept.insert( tkinter.END,
+            f'\n Face Cream\t\t   {self.face_cream.get()}\t\t{self.FC}')
+        if self.face_wash.get() != 0:
+            self.reciept.insert( tkinter.END,
+            f'\n Face Wash\t\t   {self.face_wash.get()}\t\t{self.FW}')
+        if self.hair_spray.get() != 0:
+            self.reciept.insert( tkinter.END,
+            f'\n Hair Spray\t\t   {self.hair_spray.get()}\t\t{self.HS}')
+        if self.hair_gel.get() != 0:
+            self.reciept.insert( tkinter.END,
+            f'\n Hair Gel\t\t   {self.hair_gel.get()}\t\t{self.HG}')
+        if self.body_lotion.get() != 0:
+            self.reciept.insert( tkinter.END,
+            f'\n Body Lotion\t\t   {self.body_lotion.get()}\t\t{self.BL}') 
+         
+            
+            
+
 
 #===========================Create Buttons==============================
 
@@ -788,7 +849,7 @@ class Billing_Class( object ):
                         font = self.btn_font,
                         text = 'Total',
                         command =  self.total_prices )
-        self.btn_total.place( relx = 0.62,
+        self.btn_total.place( relx = 0.60,
                               rely = 0.23,
                               relheight = 0.5 ) 
 
@@ -800,8 +861,9 @@ class Billing_Class( object ):
                         activeforeground = 'red',
                         activebackground = 'powder blue',
                         font = self.btn_font,
-                        text = 'Generate Bill' )
-        self.btn_generate_bill.place( relx = 0.69,
+                        text = 'Generate Bill',
+                        command = self.generate_reciept )
+        self.btn_generate_bill.place( relx = 0.665,
                                       rely = 0.23,
                                       relheight = 0.5 )
 
@@ -814,9 +876,23 @@ class Billing_Class( object ):
                         activebackground = 'powder blue',
                         font = self.btn_font,
                         text = 'Clear' )
-        self.btn_clear.place( relx = 0.815,
+        self.btn_clear.place( relx = 0.784,
                               rely = 0.23,
                               relheight = 0.5 )
+
+        self.btn_random = tkinter.Button( 
+                self.lblfrm_billing_menu,
+                borderwidth = 5,
+                background = 'green',
+                foreground = 'gold',
+                activeforeground = 'red',
+                activebackground = 'ghost white',
+                font = self.btn_font,
+                text = 'Random',
+                command = self.create_random_billing_information )
+        self.btn_random.place( relx = 0.849,
+                               rely = 0.23,
+                               relheight = 0.5 )
 
         self.btn_exit = tkinter.Button( 
                         self.lblfrm_billing_menu,
@@ -828,9 +904,42 @@ class Billing_Class( object ):
                         font = self.btn_font,
                         text = 'Exit',
                         command = self.ask_quit )
-        self.btn_exit.place( relx = 0.885,
+        self.btn_exit.place( relx = 0.937,
                              rely = 0.23,
-                             relheight = 0.5 )                                                                  
+                             relheight = 0.5 )
+
+#=======================Create Random Billing Information===============
+
+    def generate_random_customer_name( self ):
+        string_fullname = names.get_full_name( 
+            gender = random.choice( ['male','female'] ))
+        return( str( string_fullname ))
+
+    def generate_random_mobile_number( self ):
+        ''' Yes, well, cell phone number '''
+        prefix = ['021', '022', '025', '027', '029']
+        pre_cell = str( secrets.choice( prefix ))
+        num_cell = str( secrets.randbits( 25 ))
+        return( pre_cell + num_cell )
+
+    def generate_random_bill_number( self ):
+        return( str( secrets.token_hex( 6 )))
+
+    def generate_random_integer( self ):
+        string_amount = str( random.randint( 0, 21 ))
+        return( string_amount )
+
+
+    def create_random_billing_information( self ):
+        self.customer_name.set( self.generate_random_customer_name())
+        self.contact_number.set( self.generate_random_mobile_number())
+        self.bill_number.set( self.generate_random_bill_number())
+        self.bath_soap.set( self.generate_random_integer())
+        self.face_cream.set( self.generate_random_integer())
+        self.face_wash.set( self.generate_random_integer())
+        self.hair_spray.set( self.generate_random_integer())
+        self.hair_gel.set( self.generate_random_integer())
+        self.body_lotion.set( self.generate_random_integer())
 
 
                                
