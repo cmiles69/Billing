@@ -12,7 +12,7 @@
 #
 # Part 2 -> 8:08, 10:32, 13:56, 15:40, 18:08, 19:51
 # 22:45, 23:17, 26:06, 29:21, 32:47, 33:24, 34:46,
-# 35:39, 37:01, 40:17
+# 35:39, 37:01, 40:17, 43:23, 44:10, 45:44, 49:49
 
 # Craig Miles -> cmiles69@hushmail.com
 # https://github.com/cmiles69/Billing.git
@@ -20,11 +20,14 @@
 import tkinter
 import tkinter.scrolledtext as tkst
 import tkinter.messagebox
+import os
+import sys
+import tempfile
+import subprocess
 import random
 import names    # -> You will need to pip install this module.
 import secrets  # -> And also this module.
 from tkinter import font
-from tkinter import ttk
 
 class Billing_Class( object ):
 
@@ -159,7 +162,7 @@ class Billing_Class( object ):
                                 text = 'Customer Name :',
                                 background = '#074463',
                                 foreground = 'ghost white' )
-        self.lbl_customer_name.place( relx = 0.02,
+        self.lbl_customer_name.place( relx = 0.005,
                                       rely = 0.05 )
         self.ent_customer_name = tkinter.Entry( self.lblfrm_customer,
                                 borderwidth = 5,
@@ -167,16 +170,16 @@ class Billing_Class( object ):
                                 font = self.entry_font,
                                 background = 'green',
                                 foreground = 'gold' )
-        self.ent_customer_name.place( relx = 0.16,
+        self.ent_customer_name.place( relx = 0.145,
                                       rely = 0,
-                                      relwidth = 0.13 )
+                                      relwidth = 0.17 )
 
         self.lbl_contact_number = tkinter.Label( self.lblfrm_customer,
                                 font = self.label_font,
                                 text = 'Contact No. :',
                                 background = '#074463',
                                 foreground = 'ghost white' )
-        self.lbl_contact_number.place( relx = 0.31,
+        self.lbl_contact_number.place( relx = 0.33,
                                        rely = 0.05 )
         self.ent_contact_number = tkinter.Entry( self.lblfrm_customer,
                                 borderwidth = 5,
@@ -184,7 +187,7 @@ class Billing_Class( object ):
                                 font = self.entry_font,
                                 background = 'green',
                                 foreground = 'gold' )
-        self.ent_contact_number.place( relx = 0.42,
+        self.ent_contact_number.place( relx = 0.44,
                                        rely = 0,
                                        relwidth = 0.13 )
 
@@ -193,7 +196,7 @@ class Billing_Class( object ):
                                 text = 'Bill No. :',
                                 background = '#074463',
                                 foreground = 'ghost white' )
-        self.lbl_bill_number.place( relx = 0.570,
+        self.lbl_bill_number.place( relx = 0.584,
                                     rely = 0.05 )
         self.ent_bill_number = tkinter.Entry( self.lblfrm_customer,
                                 borderwidth = 5,
@@ -201,7 +204,7 @@ class Billing_Class( object ):
                                 font = self.entry_font,
                                 background = 'green',
                                 foreground = 'gold' )
-        self.ent_bill_number.place( relx = 0.647,
+        self.ent_bill_number.place( relx = 0.660,
                                     rely = 0,
                                     relwidth = 0.13 )
 
@@ -730,6 +733,50 @@ class Billing_Class( object ):
         else:
             return( None )
 
+    def print_reciept( self ):
+        tmp = self.reciept.get( 1.0, 'end-1c' )
+        tmp_file = tempfile.mktemp( '.txt' )
+        open( tmp_file, 'w' ).write( tmp )
+        if sys.platform.startswith( 'win' ):
+            os.startfile( tmp_file, 'print' )
+        else:
+            if sys.platform == 'linux':
+                with open( tmp_file ) as f:
+                    # call the system's lpr command
+                    p = subprocess.Popen(["lpr"], stdin=f, shell=True)  
+                    output = p.communicate()[0]
+
+    def clear_values( self ):
+        self.customer_name.set( '' )          
+        self.contact_number.set( '' )         
+        self.bill_number.set( '' )            
+        self.bath_soap.set( '' )              
+        self.face_cream.set( '' )             
+        self.face_wash.set( '' )              
+        self.hair_spray.set( '' )             
+        self.hair_gel.set( '' )               
+        self.body_lotion.set( '' )            
+        self.rice.set( '' )                   
+        self.food_oil.set( '' )               
+        self.red_lentil.set( '' )             
+        self.wheat.set( '' )                  
+        self.sugar.set( '' )                  
+        self.tea.set( '' )                    
+        self.maaza.set( '' )                  
+        self.coke.set( '' )                   
+        self.frooti.set( '' )                 
+        self.thums_up.set( '' )               
+        self.limca.set( '' )                  
+        self.sprite.set( '' )                 
+        self.total_cosmetic_price.set( '' )   
+        self.total_grocery_price.set( '' )    
+        self.total_cold_drinks_price.set( '' )
+        self.cosmetic_tax.set( '' )           
+        self.grocery_tax.set( '' )            
+        self.cold_drinks_tax.set( '' )
+        self.reciept.delete( 1.0, tkinter.END )
+        self.reciept_header()        
+
     def total_prices( self ):
         #===============Total Cosmetic Price=================
         self.BS = self.bath_soap.get()   * 4.0
@@ -789,6 +836,11 @@ class Billing_Class( object ):
         self.CDT = round( self.TDP * 0.05 )
         string_CDT = '$' + str( self.CDT )
         self.cold_drinks_tax.set( string_CDT )
+        #================Sub Total===========================
+        self.sub_total = float(( self.TCP + self.TGP + self.TDP ))
+        self.tax_total = float(( self.CT  + self.GT  + self.CDT ))
+        #================Total Owed==========================
+        self.owed_total = float(( self.sub_total + self.tax_total ))
 
     def reciept_header( self ):
         self.reciept.insert( tkinter.END, '\n\n' ) # Get past label
@@ -813,6 +865,8 @@ class Billing_Class( object ):
         self.reciept.insert( tkinter.END,
             f'\n=======================================')
 
+#=====================Cosmetics=========================================      
+
         if self.bath_soap.get() != 0:
             self.reciept.insert( tkinter.END,
             f'\n Bath Soap\t\t   {self.bath_soap.get()}\t\t{self.BS}')
@@ -830,11 +884,64 @@ class Billing_Class( object ):
             f'\n Hair Gel\t\t   {self.hair_gel.get()}\t\t{self.HG}')
         if self.body_lotion.get() != 0:
             self.reciept.insert( tkinter.END,
-            f'\n Body Lotion\t\t   {self.body_lotion.get()}\t\t{self.BL}') 
-         
-            
-            
+            f'\n Body Lotion\t\t   {self.body_lotion.get()}\t\t{self.BL}')
 
+#========================Grocery========================================
+
+        if self.rice.get() != 0:
+            self.reciept.insert( tkinter.END,
+            f'\n Rice\t\t   {self.rice.get()}\t\t{self.RI}')
+        if self.food_oil.get() != 0:
+            self.reciept.insert( tkinter.END,
+            f'\n Food Oil\t\t   {self.food_oil.get()}\t\t{self.FO}')
+        if self.red_lentil.get() != 0:
+            self.reciept.insert( tkinter.END,
+            f'\n Red Lentil\t\t   {self.red_lentil.get()}\t\t{self.RL}')
+        if self.wheat.get() != 0:
+            self.reciept.insert( tkinter.END,
+            f'\n Wheat\t\t   {self.wheat.get()}\t\t{self.WH}')
+        if self.sugar.get() != 0:
+            self.reciept.insert( tkinter.END,
+            f'\n Sugar\t\t   {self.sugar.get()}\t\t{self.SG}')
+        if self.tea.get() != 0:
+            self.reciept.insert( tkinter.END,
+            f'\n Tea\t\t   {self.tea.get()}\t\t{self.TE}')
+
+#=========================Cold Drinks===================================
+    
+        if self.maaza.get() != 0:
+            self.reciept.insert( tkinter.END,
+            f'\n Mazza\t\t   {self.maaza.get()}\t\t{self.MA}')
+        if self.coke.get() != 0:
+            self.reciept.insert( tkinter.END,
+            f'\n Coke\t\t   {self.coke.get()}\t\t{self.CO}')
+        if self.frooti.get() != 0:
+            self.reciept.insert( tkinter.END,
+            f'\n Frooti\t\t   {self.frooti.get()}\t\t{self.FR}')
+        if self.thums_up.get() != 0:
+            self.reciept.insert( tkinter.END,
+            f'\n Thums Up\t\t   {self.thums_up.get()}\t\t{self.TH}')
+        if self.limca.get() != 0:
+            self.reciept.insert( tkinter.END,
+            f'\n Limca\t\t   {self.limca.get()}\t\t{self.LI}')
+        if self.sprite.get() != 0:
+            self.reciept.insert( tkinter.END,
+            f'\n Sprite\t\t   {self.sprite.get()}\t\t{self.SP}')
+
+#===========================Totals & Tax============================
+
+        self.reciept.insert( tkinter.END,
+            f'\n=======================================')
+        self.reciept.insert( tkinter.END,
+            f'\n Sub Total Amount:\t\t\t\t{self.sub_total:.2f}' )
+        self.reciept.insert( tkinter.END,
+            f'\n Taxation:\t\t\t\t{self.tax_total:.2f}' )
+        self.reciept.insert( tkinter.END,
+            f'\n Total Owed:\t\t\t\t{self.owed_total:.2f}' )
+        self.reciept.insert( tkinter.END,
+            f'\n=======================================')
+
+        self.print_reciept()
 
 #===========================Create Buttons==============================
 
@@ -875,7 +982,8 @@ class Billing_Class( object ):
                         activeforeground = 'red',
                         activebackground = 'powder blue',
                         font = self.btn_font,
-                        text = 'Clear' )
+                        text = 'Clear',
+                        command = self.clear_values )
         self.btn_clear.place( relx = 0.784,
                               rely = 0.23,
                               relheight = 0.5 )
@@ -926,20 +1034,39 @@ class Billing_Class( object ):
         return( str( secrets.token_hex( 6 )))
 
     def generate_random_integer( self ):
-        string_amount = str( random.randint( 0, 21 ))
-        return( string_amount )
-
+        # string_amount = str( random.randint( 0, 9 ))
+        # return( string_amount )
+        string_amount = random.randrange( 0, 11 )
+        return( str( string_amount ))
+ 
 
     def create_random_billing_information( self ):
         self.customer_name.set( self.generate_random_customer_name())
         self.contact_number.set( self.generate_random_mobile_number())
         self.bill_number.set( self.generate_random_bill_number())
+        #===============================================================
         self.bath_soap.set( self.generate_random_integer())
         self.face_cream.set( self.generate_random_integer())
         self.face_wash.set( self.generate_random_integer())
         self.hair_spray.set( self.generate_random_integer())
         self.hair_gel.set( self.generate_random_integer())
         self.body_lotion.set( self.generate_random_integer())
+        #===============================================================
+        self.rice.set( self.generate_random_integer())
+        self.food_oil.set( self.generate_random_integer())
+        self.red_lentil.set( self.generate_random_integer())
+        self.wheat.set( self.generate_random_integer())
+        self.sugar.set( self.generate_random_integer())
+        self.tea.set( self.generate_random_integer())
+        #===============================================================
+        self.maaza.set( self.generate_random_integer())
+        self.coke.set( self.generate_random_integer())
+        self.frooti.set( self.generate_random_integer())
+        self.thums_up.set( self.generate_random_integer())
+        self.limca.set( self.generate_random_integer())
+        self.sprite.set( self.generate_random_integer())
+
+        
 
 
                                
