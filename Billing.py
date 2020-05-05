@@ -13,6 +13,8 @@
 # Part 2 -> 8:08, 10:32, 13:56, 15:40, 18:08, 19:51
 # 22:45, 23:17, 26:06, 29:21, 32:47, 33:24, 34:46,
 # 35:39, 37:01, 40:17, 43:23, 44:10, 45:44, 49:49
+#
+# part 3 -> 00:55
 
 # Craig Miles -> cmiles69@hushmail.com
 # https://github.com/cmiles69/Billing.git
@@ -733,6 +735,18 @@ class Billing_Class( object ):
         else:
             return( None )
 
+    def save_reciept( self ):
+        SR = tkinter.messagebox.askyesno(
+            title = 'Save The Reciept To File',
+            message = 'Do You Want To Save The Reciept?' )
+        if SR > 0:
+            self.data_reciept = self.reciept.get( 1.0, tkinter.END )
+            tmp = open( str( self.bill_number.get()) + '.txt', 'w' )
+            tmp.write( self.data_reciept )
+            tmp.close()
+        else:
+            return( None )
+
     def print_reciept( self ):
         tmp = self.reciept.get( 1.0, 'end-1c' )
         tmp_file = tempfile.mktemp( '.txt' )
@@ -852,16 +866,16 @@ class Billing_Class( object ):
         self.reciept.delete( 1.0, tkinter.END )
         self.reciept_header()
         self.reciept.insert( tkinter.END, 
-            f'\nBill Number : { self.bill_number.get()}')
+            f'\nBill Number :   { self.bill_number.get()}')
         self.reciept.insert( tkinter.END,
             f'\nCustomer Name : { self.customer_name.get()}')
         self.reciept.insert( tkinter.END,
-            f'\nPhone Number : { self.contact_number.get()}')
+            f'\nPhone Number :  { self.contact_number.get()}')
 
         self.reciept.insert( tkinter.END,
             f'\n=======================================')
         self.reciept.insert( tkinter.END,
-            f'\n Products:\t\t   Qty:\t\tPrice:' )
+            f'\n Products:         Qty:          Price:' )  # 9, 10
         self.reciept.insert( tkinter.END,
             f'\n=======================================')
 
@@ -869,22 +883,28 @@ class Billing_Class( object ):
 
         if self.bath_soap.get() != 0:
             self.reciept.insert( tkinter.END,
-            f'\n Bath Soap\t\t   {self.bath_soap.get()}\t\t{self.BS}')
+            f'\n Bath Soap         {self.bath_soap.get()}\
+            {self.BS}') # 9,13
         if self.face_cream.get() != 0:
             self.reciept.insert( tkinter.END,
-            f'\n Face Cream\t\t   {self.face_cream.get()}\t\t{self.FC}')
+            f'\n Face Cream        {self.face_cream.get()}\
+            {self.FC}')  #8,13
         if self.face_wash.get() != 0:
             self.reciept.insert( tkinter.END,
-            f'\n Face Wash\t\t   {self.face_wash.get()}\t\t{self.FW}')
+            f'\n Face Wash         {self.face_wash.get()}\
+            {self.FW}')  #9,11
         if self.hair_spray.get() != 0:
             self.reciept.insert( tkinter.END,
-            f'\n Hair Spray\t\t   {self.hair_spray.get()}\t\t{self.HS}')
+            f'\n Hair Spray        {self.hair_spray.get()}\
+            {self.HS}')  #8,12
         if self.hair_gel.get() != 0:
             self.reciept.insert( tkinter.END,
-            f'\n Hair Gel\t\t   {self.hair_gel.get()}\t\t{self.HG}')
+            f'\n Hair Gel          {self.hair_gel.get()}\
+            {self.HG}')  #10,12
         if self.body_lotion.get() != 0:
             self.reciept.insert( tkinter.END,
-            f'\n Body Lotion\t\t   {self.body_lotion.get()}\t\t{self.BL}')
+            f'\n Body Lotion       {self.body_lotion.get()}\
+            {self.BL}') #7,12
 
 #========================Grocery========================================
 
@@ -893,10 +913,12 @@ class Billing_Class( object ):
             f'\n Rice\t\t   {self.rice.get()}\t\t{self.RI}')
         if self.food_oil.get() != 0:
             self.reciept.insert( tkinter.END,
-            f'\n Food Oil\t\t   {self.food_oil.get()}\t\t{self.FO}')
+            f'\n Food Oil          {self.food_oil.get()}\
+            {self.FO}')
         if self.red_lentil.get() != 0:
             self.reciept.insert( tkinter.END,
-            f'\n Red Lentil\t\t   {self.red_lentil.get()}\t\t{self.RL}')
+            f'\n Red Lentil        {self.red_lentil.get()}\
+            {self.RL}')
         if self.wheat.get() != 0:
             self.reciept.insert( tkinter.END,
             f'\n Wheat\t\t   {self.wheat.get()}\t\t{self.WH}')
@@ -920,7 +942,8 @@ class Billing_Class( object ):
             f'\n Frooti\t\t   {self.frooti.get()}\t\t{self.FR}')
         if self.thums_up.get() != 0:
             self.reciept.insert( tkinter.END,
-            f'\n Thums Up\t\t   {self.thums_up.get()}\t\t{self.TH}')
+            f'\n Thums Up          {self.thums_up.get()}\
+            {self.TH}')
         if self.limca.get() != 0:
             self.reciept.insert( tkinter.END,
             f'\n Limca\t\t   {self.limca.get()}\t\t{self.LI}')
@@ -933,15 +956,15 @@ class Billing_Class( object ):
         self.reciept.insert( tkinter.END,
             f'\n=======================================')
         self.reciept.insert( tkinter.END,
-            f'\n Sub Total Amount:\t\t\t\t{self.sub_total:.2f}' )
+            f'\n Sub Total Amount:              {self.sub_total:.2f}' )
         self.reciept.insert( tkinter.END,
-            f'\n Taxation:\t\t\t\t{self.tax_total:.2f}' )
+            f'\n Taxation:                      {self.tax_total:.2f}' )
         self.reciept.insert( tkinter.END,
-            f'\n Total Owed:\t\t\t\t{self.owed_total:.2f}' )
+            f'\n Total Owed:                    {self.owed_total:.2f}' )
         self.reciept.insert( tkinter.END,
             f'\n=======================================')
 
-        self.print_reciept()
+        self.save_reciept()
 
 #===========================Create Buttons==============================
 
