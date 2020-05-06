@@ -14,7 +14,7 @@
 # 22:45, 23:17, 26:06, 29:21, 32:47, 33:24, 34:46,
 # 35:39, 37:01, 40:17, 43:23, 44:10, 45:44, 49:49
 #
-# part 3 -> 00:55
+# part 3 -> 00:55, 5:47
 
 # Craig Miles -> cmiles69@hushmail.com
 # https://github.com/cmiles69/Billing.git
@@ -748,17 +748,23 @@ class Billing_Class( object ):
             return( None )
 
     def print_reciept( self ):
-        tmp = self.reciept.get( 1.0, 'end-1c' )
-        tmp_file = tempfile.mktemp( '.txt' )
-        open( tmp_file, 'w' ).write( tmp )
-        if sys.platform.startswith( 'win' ):
-            os.startfile( tmp_file, 'print' )
+        PR = tkinter.messagebox.askyesno(
+            title = 'Print The Reciept',
+            message = 'Do You Want To Print The Reciept?' )
+        if PR > 0:
+            tmp = self.reciept.get( 1.0, 'end-1c' )
+            tmp_file = tempfile.mktemp( '.txt' )
+            open( tmp_file, 'w' ).write( tmp )
+            if sys.platform.startswith( 'win' ):
+                os.startfile( tmp_file, 'print' )
+            else:
+                if sys.platform == 'linux':
+                    with open( tmp_file ) as f:
+                        # call the system's lpr command
+                        p = subprocess.Popen(["lpr"], stdin=f, shell=True)  
+                        output = p.communicate()[0]
         else:
-            if sys.platform == 'linux':
-                with open( tmp_file ) as f:
-                    # call the system's lpr command
-                    p = subprocess.Popen(["lpr"], stdin=f, shell=True)  
-                    output = p.communicate()[0]
+            return( None )
 
     def clear_values( self ):
         self.customer_name.set( '' )          
@@ -964,8 +970,6 @@ class Billing_Class( object ):
         self.reciept.insert( tkinter.END,
             f'\n=======================================')
 
-        self.save_reciept()
-
 #===========================Create Buttons==============================
 
     def create_buttons( self ):
@@ -981,7 +985,35 @@ class Billing_Class( object ):
                         command =  self.total_prices )
         self.btn_total.place( relx = 0.60,
                               rely = 0.23,
-                              relheight = 0.5 ) 
+                              relheight = 0.5 )
+
+        self.btn_save_reciept = tkinter.Button(
+                        self.lblfrm_billing_menu,
+                        borderwidth = 5,
+                        pady = 1,
+                        background = 'purple1',
+                        foreground = 'gold',
+                        activeforeground = 'gold',
+                        activebackground = 'royal blue',
+                        font = self.btn_font,
+                        text = 'Save Reciept',
+                        command =  self.print_reciept )
+        self.btn_save_reciept.place( relx = 0.665,
+                                     rely = 0.74 )
+
+        self.btn_print_reciept = tkinter.Button(
+                        self.lblfrm_billing_menu,
+                        borderwidth = 5,
+                        pady = 1,
+                        background = 'purple1',
+                        foreground = 'gold',
+                        activeforeground = 'gold',
+                        activebackground = 'royal blue',
+                        font = self.btn_font,
+                        text = 'Print Reciept',
+                        command =  self.print_reciept )
+        self.btn_print_reciept.place( relx = 0.665,
+                                      rely = 0 )
 
         self.btn_generate_bill = tkinter.Button( 
                         self.lblfrm_billing_menu,
