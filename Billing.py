@@ -14,7 +14,7 @@
 # 22:45, 23:17, 26:06, 29:21, 32:47, 33:24, 34:46,
 # 35:39, 37:01, 40:17, 43:23, 44:10, 45:44, 49:49
 #
-# part 3 -> 00:55, 5:47
+# part 3 -> 00:55, 5:47, 6:25, 7:15, 8:53
 
 # Craig Miles -> cmiles69@hushmail.com
 # https://github.com/cmiles69/Billing.git
@@ -23,6 +23,7 @@ import tkinter
 import tkinter.scrolledtext as tkst
 import tkinter.messagebox
 import os
+import pathlib
 import sys
 import tempfile
 import subprocess
@@ -30,6 +31,10 @@ import random
 import names    # -> You will need to pip install this module.
 import secrets  # -> And also this module.
 from tkinter import font
+from tkinter import filedialog
+
+# Change current working directory to file parent
+os.chdir( pathlib.Path(__file__).parent.absolute())
 
 class Billing_Class( object ):
 
@@ -217,7 +222,8 @@ class Billing_Class( object ):
                                 activeforeground = 'gold',
                                 activebackground = 'blue',
                                 font = self.btn_font,
-                                text = 'Search' )       
+                                text = 'Search',
+                                command = self.find_bill )       
         self.btn_search.place( relx = 0.825,
                                rely = 0,
                                relwidth = 0.13 )
@@ -735,15 +741,34 @@ class Billing_Class( object ):
         else:
             return( None )
 
+    def find_bill( self ):
+        os.chdir( 'bills/' )
+       
+        file_path = filedialog.askopenfilename()
+        the_file = os.path.split( file_path )[1]
+        FD = open( the_file, 'rt' )
+        contents = FD.read()
+        # print( contents )
+        
+        self.reciept.delete( 1.0, tkinter.END )
+        self.reciept.insert( tkinter.END, contents )
+        FD.close()
+        
+
     def save_reciept( self ):
         SR = tkinter.messagebox.askyesno(
             title = 'Save The Reciept To File',
             message = 'Do You Want To Save The Reciept?' )
         if SR > 0:
             self.data_reciept = self.reciept.get( 1.0, tkinter.END )
-            tmp = open( str( self.bill_number.get()) + '.txt', 'w' )
+            tmp = open( 
+                'bills/' + str( self.bill_number.get()) + '.txt', 'w' )
             tmp.write( self.data_reciept )
             tmp.close()
+            tkinter.messagebox.showinfo(
+                title = 'Reciept Saved',
+                message = f'Bill No. : {self.bill_number.get()}\
+                    saved successfully')
         else:
             return( None )
 
@@ -991,13 +1016,13 @@ class Billing_Class( object ):
                         self.lblfrm_billing_menu,
                         borderwidth = 5,
                         pady = 1,
-                        background = 'purple1',
+                        background = 'blue',
                         foreground = 'gold',
                         activeforeground = 'gold',
                         activebackground = 'royal blue',
                         font = self.btn_font,
                         text = 'Save Reciept',
-                        command =  self.print_reciept )
+                        command =  self.save_reciept )
         self.btn_save_reciept.place( relx = 0.665,
                                      rely = 0.74 )
 
@@ -1005,7 +1030,7 @@ class Billing_Class( object ):
                         self.lblfrm_billing_menu,
                         borderwidth = 5,
                         pady = 1,
-                        background = 'purple1',
+                        background = 'blue',
                         foreground = 'gold',
                         activeforeground = 'gold',
                         activebackground = 'royal blue',
